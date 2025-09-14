@@ -32,7 +32,7 @@
     }
     #digitalClock {
       margin-top: 8px;
-      font-size: 3em;
+      font-size: 4.8em;
       text-align: center;
     }
     .hour {
@@ -184,8 +184,8 @@
       // 針ごとの距離スコアを計算
       function scoreHand(targetAngle, handLength) {
         const diff = angleDiff(angle, targetAngle);
-        const radialDiff = Math.max(0, distance - handLength); // 長さより外なら距離を追加
-        return diff * 100 + radialDiff; // 角度を優先しつつ距離も加味
+        const radialDiff = Math.max(0, distance - handLength);
+        return diff * 100 + radialDiff;
       }
 
       const hourScore = scoreHand(hourAngle, radius*0.5);
@@ -209,11 +209,11 @@
       const now = customTime ? new Date(customTime) : new Date();
 
       if (dragging === "hour") {
-        // 1周 = 12時間（分も含めて連動）
+        // 短針: 1周 = 12時間（分も含めて連動）
         let minutesDelta = delta / (2*Math.PI) * 12 * 60;
         now.setMinutes(now.getMinutes() + minutesDelta);
       } else if (dragging === "minute") {
-        // 1周 = 60分
+        // 長針: 1周 = 60分（setMinutes が自然に時間を繰り上げる）
         let minutesDelta = delta / (2*Math.PI) * 60;
         now.setMinutes(now.getMinutes() + minutesDelta);
       }
