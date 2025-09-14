@@ -32,11 +32,8 @@
     }
     #digitalClock {
       margin-top: 8px;
-      font-size: 4.8em;
+      font-size: 3em;
       text-align: center;
-    }
-    #digitalClock rt {
-      font-size: 0.6em;
     }
     .hour {
       color: #C62828;
@@ -173,6 +170,8 @@
       const x = e.clientX - rect.left - canvas.width/2;
       const y = e.clientY - rect.top - canvas.height/2;
       const angle = getAngle(x, y);
+      const distance = Math.sqrt(x*x + y*y);
+      const radius = canvas.width/2;
 
       const now = customTime ? new Date(customTime) : new Date();
       let hourAngle = ((now.getHours() % 12) + now.getMinutes()/60) * Math.PI/6;
@@ -182,15 +181,18 @@
         return Math.abs(Math.atan2(Math.sin(a-b), Math.cos(a-b)));
       }
 
-      if (angleDiff(angle, hourAngle) < 0.3) {
-        dragging = "hour";
-      } else if (angleDiff(angle, minuteAngle) < 0.3) {
-        dragging = "minute";
+      // 針ごとの距離スコアを計算
+      function scoreHand(targetAngle, handLength) {
+        const diff = angleDiff(angle, targetAngle);
+        const radialDiff = Math.max(0, distance - handLength); // 長さより外なら距離を追加
+        return diff * 100 + radialDiff; // 角度を優先しつつ距離も加味
       }
 
-      if (dragging) {
-        lastAngle = angle;
-      }
+      const hourScore = scoreHand(hourAngle, radius*0.5);
+      const minuteScore = scoreHand(minuteAngle, radius*0.7);
+
+      dragging = hourScore < minuteScore ? "hour" : "minute";
+      lastAngle = angle;
     }
 
     function handlePointerMove(e) {
