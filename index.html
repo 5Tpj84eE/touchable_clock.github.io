@@ -47,7 +47,7 @@
     #resetBtn {
       margin-top: 10px;
       font-size: 3.0em;
-      padding: 8px 24px;
+      padding: 6px 24px;
       border: none;
       border-radius: 6px;
       background: #1976D2;
@@ -63,7 +63,7 @@
   <div class="container">
     <canvas id="clockCanvas"></canvas>
     <div id="digitalClock"></div>
-    <button id="resetBtn">今の時刻に合わせる</button>
+    <button id="resetBtn">現在時刻に合わせる</button>
   </div>
 
   <script>
@@ -72,7 +72,7 @@
 
     let customTime = null;   // 手動設定中の時間
     let dragging = null;     // "hour" or "minute"
-    let lastAngle = null;    // 直前の角度（相対回転計算用）
+    let lastAngle = null;    // 直前の角度
 
     function resizeCanvas() {
       const size = Math.min(window.innerWidth, window.innerHeight * 0.75);
@@ -201,16 +201,15 @@
       const angle = getAngle(x, y);
 
       let delta = angle - lastAngle;
-      // -π～πに正規化
       delta = Math.atan2(Math.sin(delta), Math.cos(delta));
       lastAngle = angle;
 
       const now = customTime ? new Date(customTime) : new Date();
 
       if (dragging === "hour") {
-        // 1周 = 12時間
-        let hoursDelta = delta / (2*Math.PI) * 12;
-        now.setHours(now.getHours() + hoursDelta);
+        // 1周 = 12時間（分も含めて連動）
+        let minutesDelta = delta / (2*Math.PI) * 12 * 60;
+        now.setMinutes(now.getMinutes() + minutesDelta);
       } else if (dragging === "minute") {
         // 1周 = 60分
         let minutesDelta = delta / (2*Math.PI) * 60;
